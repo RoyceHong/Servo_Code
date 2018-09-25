@@ -44,9 +44,7 @@ int input(){
         }
         // if you get a newline, print the string, then the string's value:
         if (inChar == '\n') {
-          Serial.print("Value:");
           inputNum = inString.toInt();
-          Serial.println(inString.toInt());
           // clear the string for new input:
           inString = "";
         }  
@@ -57,11 +55,13 @@ int input(){
 void loop() {
   if(Serial.available() > 0){
     inputPosition = input(); 
+    Serial.print("Value:");
+    Serial.println(inputPosition);
     if(inputPosition <= startPosition && inputPosition != 0){  
        myServo.write(inputPosition);
     }
-    else{
-      Serial.println("No");
+    else if(inputPosition != 0){
+      Serial.println("Too High!");
     }
   }
 
