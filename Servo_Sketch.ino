@@ -11,6 +11,7 @@ Servo myServo;
 int servoPosition = 0;
 int inputPosition = 0;
 String inString = "";
+int startPosition = 0;
 
   // put your setup code here, to run once:
 
@@ -20,11 +21,21 @@ void setup() {
     Serial.begin(9600);
     while (!Serial){}
     Serial.println("Ready");
+    for(int calibrate = 0; calibrate <= 180; calibrate++){
+        myServo.write(calibrate);
+        Serial.println(calibrate);
+        delay(200);
+        if(digitalRead(A0)){
+          startPosition = calibrate;
+          Serial.println(startPosition);
+          break;
+        }      
+    }
 }
 
 
-int input(){    
-    int input;
+int input(){  
+    int input = 0; 
     while (Serial.available() > 0) {
         int inChar = Serial.read();
         if (isDigit(inChar)) {
@@ -36,8 +47,6 @@ int input(){
           Serial.print("Value:");
           input = inString.toInt();
           Serial.println(inString.toInt());
-          Serial.print("String: ");
-          Serial.println(inString);
           // clear the string for new input:
           inString = "";
         }  
@@ -46,17 +55,16 @@ int input(){
 }
 
 void loop() {
-    inputPosition = input();     
-    myServo.write(inputPosition);
-    /*
-      for (servoPosition = 0; servoPosition < 180; servoPosition += 1){
-          myServo.write(servoPosition);
-          delay(10);
-      }
-      for ( servoPosition = 180; servoPosition >= 0; servoPosition -=1){
-        myServo.write(servoPosition);
-        delay(10);
-      }
-      */
+  if(Serial.available() > 0){
+    inputPosition = input(); 
+    if(inputPosition <= startPosition){  
+       myServo.write(inputPosition);
+    }
+    else
+      Serial.println("No");
+  }
+
+//  Serial.println(digitalRead(A0));
+ // delay(100);
 
 }
